@@ -2,11 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
+
 import '../components/components.dart';
 import '../models/detail.dart';
-import '../providers/epub_content_notifier.dart';
-import 'ebook_page.dart';
-import 'epub_info_page.dart';
+import '../providers/package_content_notifier.dart';
+import 'detail_page.dart';
+import 'package_info_page.dart';
 
 class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
@@ -20,9 +21,9 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   void _showEbook(Detail selectedDetail, BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute<EbookPage>(
+      MaterialPageRoute<DetailPage>(
         builder: (_) {
-          return EbookPage(selectedDetail: selectedDetail);
+          return DetailPage(selectedDetail: selectedDetail);
         },
       ),
     );
@@ -32,10 +33,10 @@ class _MainPageState extends ConsumerState<MainPage> {
     debugPrint('_onAction: $action $filePath');
     ref.read(epubContentNotifier.notifier).parse(filePath);
     Navigator.of(context).push(
-      MaterialPageRoute<EpubInfoPage>(
+      MaterialPageRoute<PackageInfoPage>(
         builder: (_) {
           debugPrint('_onAction builder: $action $filePath');
-          return EpubInfoPage(
+          return PackageInfoPage(
             filePath: filePath,
           );
         },
@@ -67,3 +68,5 @@ class _MainPageState extends ConsumerState<MainPage> {
   }
 
 }
+
+

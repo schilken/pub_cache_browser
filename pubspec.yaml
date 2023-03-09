@@ -11,14 +11,11 @@ dependencies:
   collection: ^1.16.0
   cupertino_icons: ^1.0.4
   desktop_multi_window: ^0.2.0
-  epub_view:
-    path: ../_forks/packages.flutter/packages/epub_view
   equatable: ^2.0.3
   file_picker: ^4.6.1
   flutter:
     sdk: flutter
   flutter_hooks: ^0.18.5
-  flutter_html: ^3.0.0-alpha.6
   flutter_markdown: ^0.6.10+5
   flutter_riverpod: ^2.1.1
   freezed_annotation: ^2.1.0

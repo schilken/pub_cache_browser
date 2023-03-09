@@ -6,7 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import '../components/get_custom_toolbar.dart';
 
 const _helpMarkdown = '''
-# My Template for Epub Browsers
+# My Template for PubCacheBrowsers
 This project is a stripped down skeleton which I use as a starting poiubt for a new tool which either wraps a command clien tool or uses Dart, Flutter and packages to do something useful. 
 
 ## Some Hints about this Template App

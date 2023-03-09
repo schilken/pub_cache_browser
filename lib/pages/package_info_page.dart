@@ -12,13 +12,13 @@ import '../components/async_value_widget.dart';
 import '../components/get_custom_toolbar.dart';
 import 'package:mixin_logger/mixin_logger.dart' as log;
 
-import '../models/epub_content_record.dart';
-import '../providers/epub_content_notifier.dart';
-import '../providers/epub_repository.dart';
+import '../models/package_content_record.dart';
+import '../providers/package_content_notifier.dart';
+import '../providers/package_repository.dart';
 import '../utils/utils.dart';
 
-class EpubInfoPage extends ConsumerStatefulWidget {
-  const EpubInfoPage({super.key, required this.filePath});
+class PackageInfoPage extends ConsumerStatefulWidget {
+  const PackageInfoPage({super.key, required this.filePath});
 
   final String filePath;
 
@@ -26,8 +26,7 @@ class EpubInfoPage extends ConsumerStatefulWidget {
   _EpubInfoPageState createState() => _EpubInfoPageState();
 }
 
-class _EpubInfoPageState extends ConsumerState<EpubInfoPage> {
-
+class _EpubInfoPageState extends ConsumerState<PackageInfoPage> {
   void _refresh() {
     setState(() {});
   }
@@ -84,7 +83,7 @@ class _EpubInfoPageState extends ConsumerState<EpubInfoPage> {
               children: [
 //                ScanPageHeader(ref: ref),
                 Expanded(
-                  child: AsyncValueWidget<List<EpubContentRecord>?>(
+                  child: AsyncValueWidget<List<PackageContentRecord>?>(
                       value: epubContentAsyncValue,
                       data: (records) {
                         if (records == null) {
@@ -112,7 +111,7 @@ class RecordsView extends StatelessWidget {
     this.ref, {
     super.key,
   });
-  final List<EpubContentRecord> records;
+  final List<PackageContentRecord> records;
   final WidgetRef ref;
 
   @override
@@ -137,12 +136,12 @@ class RecordsView extends StatelessWidget {
                       fileName: record.fileName,
                     );
                     if (filePath != null) {
-                      ref.read(fileSystemRepositoryProvider).writeTextFile(
-                            filePath,
-                            ref
-                                .read(epubRepositoryProvider)
-                                .getText(record.fileName),
-                          );
+                      // ref.read(fileSystemRepositoryProvider).writeTextFile(
+                      //       filePath,
+                      //       ref
+                      //           .read(packageRepositoryProvider)
+                      //           .getText(record.fileName),
+                      //     );
                     }
                   },
                 ),
@@ -159,16 +158,12 @@ class RecordsView extends StatelessWidget {
               if (record.fileName.endsWith('png') ||
                   record.fileName.endsWith('jpg') ||
                   record.fileName.endsWith('gif'))
-                Image.memory(
-                  ref
-                      .read(epubRepositoryProvider)
-                      .getImageBytes(record.fileName),
-                ),
+                Text('Image.memory()'),
               if (record.fileName.endsWith('css') ||
                   record.fileName.endsWith('xhtml') ||
                   record.fileName.endsWith('html'))
                 SelectableText(
-                  ref.read(epubRepositoryProvider).getText(record.fileName),
+                  'ref.read(packageRepositoryProvider).getText(record.fileName)',
                 ),
             ],
           ),

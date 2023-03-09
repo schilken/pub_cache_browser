@@ -1,7 +1,6 @@
 export 'async_value_widget.dart';
 export 'chip_list_editor.dart';
 export 'detail_tile.dart';
-export 'epub_viewer.dart';
 export 'files_view.dart';
 export 'get_custom_toolbar.dart';
 export 'highlighted_text.dart';
@@ -13,7 +12,6 @@ export 'message_bar.dart';
 export 'options_sidebar.dart';
 export 'settings_fields_view.dart';
 export 'sidebar_switch.dart';
-export 'table_of_contents_view.dart';
 export 'text_selection_controls.dart';
 export 'textfield_dialog.dart';
 export 'toolbar_searchfield.dart';

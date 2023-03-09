@@ -76,7 +76,7 @@ class _MainViewState extends ConsumerState<MainView> {
             items: const [
               SidebarItem(
                 leading: MacosIcon(CupertinoIcons.search),
-                label: Text('EPUBs'),
+                label: Text('Packages'),
               ),
               SidebarItem(
                 leading: MacosIcon(CupertinoIcons.gear),

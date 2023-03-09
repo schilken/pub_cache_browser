@@ -20,7 +20,7 @@ ToolBar getCustomToolBar(BuildContext context, WidgetRef ref) {
         MacosWindowScope.of(context).toggleSidebar();
       },
     ),
-    title: const Text('Epub Browser'),
+    title: const Text('PubCacheBrowser'),
     titleWidth: 250,
     actions: [
       const ToolBarSpacer(spacerUnits: 3),
