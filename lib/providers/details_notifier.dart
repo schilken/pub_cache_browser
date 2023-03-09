@@ -24,7 +24,7 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
 //  late SettingsState _settings;
 //  final _sectionsMap = <String, List<String>>{};
 
-  List<String> _fileList = [];
+  Map<String, DetailRecord> _packageMap = {};
 
   @override
   FutureOr<List<DetailRecord>?> build() async {
@@ -45,14 +45,51 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     _records.clear();
     state = const AsyncValue.loading();
     state = await AsyncResult.guard(
-      () => _fileSystemRepository.getPackageDirectories(_defaultFolder),
+      () => _createDetails(_defaultFolder),
     );
     _records.addAll(state.value ?? []);
   }
 
+  Future<List<DetailRecord>> _createDetails(String directory) async {
+    final directoryNames =
+        _fileSystemRepository.getPackageDirectories(directory);
+    for (final packageVersion in directoryNames) {
+      final parts = packageVersion.split('-');
+      if (parts.length != 2) {
+        continue;
+      }
+      final packageName = parts.first;
+      final versionString = parts.last;
+      _packageMap.update(
+        packageName,
+        (package) => _update(package, versionString),
+        ifAbsent: () => DetailRecord(
+          packageName: packageName,
+          directoryPath: p.split(directory).last,
+          versionCount: 1,
+          versions: [versionString],
+        ),
+      );
+    }
+    return Future.value(
+      _packageMap.values.toList()
+        ..sort(
+          (r1, r2) => r1.packageName.compareTo(r2.packageName),
+        ),
+    );
+  }
+
+  DetailRecord _update(DetailRecord record, String versionString) {
+    return record.copyWith(
+      versionCount: record.versionCount + 1,
+      versions: record.versions..add(versionString),
+    );
+  }
+
+
   Future<void> refreshFileList() async {
     _cache.clear();
-    _fileList = [];
+    _packageMap.clear();
     await scan();
   }
 
@@ -86,7 +123,8 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     }
     return filteredList;
   }
-
+  
+ 
   // Future<List<DetailRecord>> _getAllDetails() async {
   //   if (_fileList.isEmpty) {
   //     _fileList = await _fileSystemRepository.getPackages(_defaultFolder);

@@ -14,7 +14,6 @@ import 'package:mixin_logger/mixin_logger.dart' as log;
 
 import '../models/package_content_record.dart';
 import '../providers/package_content_notifier.dart';
-import '../providers/package_repository.dart';
 import '../utils/utils.dart';
 
 class PackageInfoPage extends ConsumerStatefulWidget {
@@ -33,7 +32,7 @@ class _EpubInfoPageState extends ConsumerState<PackageInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final epubContentAsyncValue = ref.watch(epubContentNotifier);
+    final epubContentAsyncValue = ref.watch(packageContentNotifier);
     double windowHeight = MediaQuery.of(context).size.height;
     log.i('MediaQuery.height $windowHeight');
     return MacosScaffold(

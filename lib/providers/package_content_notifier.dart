@@ -35,7 +35,7 @@ class PackageContentNotifier
   bool get isLoading => state.isLoading;
 }
 
-final epubContentNotifier =
+final packageContentNotifier =
     AsyncNotifierProvider<PackageContentNotifier, List<PackageContentRecord>?>(
         () {
   return PackageContentNotifier();

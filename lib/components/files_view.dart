@@ -48,11 +48,15 @@ class FilesView extends ConsumerWidget {
                 onPressed: () =>
                     ref.read(detailsNotifier.notifier).refreshFileList(),
               ),
-              // ref.watch(detailsNotifier).when(
-              //       inProgress: () => const CupertinoActivityIndicator(),
-              //       loaded: (a, fileCount, b, c, d) =>
-              //           Text('$fileCount Projects'),
-              //     ),
+              AsyncValueWidget<List<DetailRecord>?>(
+                value: detailListAsyncValue,
+                data: (records) {
+                  if (records == null) {
+                    return const Center(child: Text('-'));
+                  }
+                  return Text(records.length.toString());
+                },
+              ),
             ],
           ),
         ),
@@ -67,7 +71,8 @@ class FilesView extends ConsumerWidget {
                   return const Center(child: Text('No paackages found'));
                 }
                 return RecordsView(records, ref);
-              }),
+            },
+          ),
         ),
       ],
     );
@@ -92,9 +97,9 @@ class RecordsView extends StatelessWidget {
         return Material(
           child: ListTile(
             title: Text(
-              record.packageName,
+              '${record.packageName} - ${record.versionCount}',
             ),
-            subtitle: Text(record.directoryPath),
+            subtitle: Text('Versions: ${record.versions.join(", ")}'),
           ),
         );
       },

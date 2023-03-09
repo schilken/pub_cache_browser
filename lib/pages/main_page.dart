@@ -31,7 +31,7 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   void _onAction(String action, String filePath, BuildContext context) {
     debugPrint('_onAction: $action $filePath');
-    ref.read(epubContentNotifier.notifier).parse(filePath);
+    ref.read(packageContentNotifier.notifier).parse(filePath);
     Navigator.of(context).push(
       MaterialPageRoute<PackageInfoPage>(
         builder: (_) {

@@ -12,21 +12,14 @@ import '../models/detail_record.dart';
 class FileSystemRepository {
   String? currentDirectory;
 
-  Future<List<DetailRecord>> getPackageDirectories(String directory) async {
+  List<String> getPackageDirectories(String directory) {
     log.i('getPackageDirectories $directory');
     final dir = Directory(directory);
     final entities = dir.listSync();
     return entities
         .map((entity) => p.basename(entity.path))
         .where((packageName) => !packageName.startsWith('.'))
-        .map(
-          (path) => DetailRecord(
-            packageName: p.basename(path),
-            directoryPath: p.split(directory).last,
-          ),
-        )
-        .toList()
-      ..sort((r1, r2) => r1.packageName.compareTo(r2.packageName));
+        .toList();
   }
 
   Future<String> readFile(String filePath) async {
