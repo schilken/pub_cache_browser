@@ -11,7 +11,7 @@ class DefaultFolderNotifier extends Notifier<String> {
   @override
   String build() {
     final userHomeDirectory = Platform.environment['HOME'];
-
+    _preferencesRepository = ref.read(preferencesRepositoryProvider);
     final currentValue = '$userHomeDirectory/.pub-cache/hosted/pub.dev';
     return currentValue;
   }

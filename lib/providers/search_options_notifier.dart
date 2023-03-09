@@ -22,6 +22,10 @@ class SearchOptions {
       filterEnabled ?? this.filterEnabled,
     );
   }
+
+  @override
+  String toString() =>
+      'SearchOptions(searchWord: $searchWord, caseSensitive: $caseSensitive, filterEnabled: $filterEnabled)';
 }
 
 class SearchOptionsNotifier extends Notifier<SearchOptions> {

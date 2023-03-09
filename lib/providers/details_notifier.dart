@@ -27,7 +27,6 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
 
   @override
   FutureOr<List<DetailRecord>?> build() async {
-//    print('DetailsNotifier.build');
     _fileSystemRepository = ref.read(fileSystemRepositoryProvider);
 
     _cache = ref.watch(cacheProvider);
@@ -37,6 +36,8 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     _searchOptions = ref.watch(searchOptionsNotifier);
     _defaultFolder = ref.watch(defaultFolderNotifier);
     Future.delayed(const Duration(milliseconds: 1), scan);
+    print(
+        'DetailsNotifier.build _defaultFolder: $_defaultFolder, _sortOrder: $_sortOrder');
     return null;
   }
 

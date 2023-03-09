@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'components/options_sidebar.dart';
 import 'main.dart';
 import 'pages/file_content_page.dart';
 import 'pages/pages.dart';
+import 'providers/default_folder_notifier.dart';
 
 class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});
@@ -23,6 +25,16 @@ class _MainViewState extends ConsumerState<MainView> {
   int sidebarPageIndex = 0;
 
   void _changeSidebarIndex(int newIndex) {
+    if (newIndex == 0) {
+      final userHomeDirectory = Platform.environment['HOME'];
+      final currentValue = '$userHomeDirectory/.pub-cache/hosted/pub.dev';
+      ref.read(defaultFolderNotifier.notifier).setFolder(currentValue);
+    } else if (newIndex == 1) {
+      final userHomeDirectory = Platform.environment['HOME'];
+      final currentValue =
+          '$userHomeDirectory/.pub-cache/hosted/pub.dartlang.org';
+      ref.read(defaultFolderNotifier.notifier).setFolder(currentValue);
+    }
     setState(() {
       sidebarPageIndex = newIndex;
     });
@@ -76,7 +88,11 @@ class _MainViewState extends ConsumerState<MainView> {
             items: const [
               SidebarItem(
                 leading: MacosIcon(CupertinoIcons.search),
-                label: Text('Packages'),
+                label: Text('pub.dev'),
+              ),
+              SidebarItem(
+                leading: MacosIcon(CupertinoIcons.search),
+                label: Text('pub.dartlang.org'),
               ),
               SidebarItem(
                 leading: MacosIcon(CupertinoIcons.gear),
@@ -102,7 +118,14 @@ class _MainViewState extends ConsumerState<MainView> {
           index: sidebarPageIndex,
           children: [
             CupertinoTabView(
-              builder: (_) => const MainPage(),
+              builder: (_) {
+                return const MainPage();
+              },
+            ),
+            CupertinoTabView(
+              builder: (_) {
+                return const MainPage();
+              },
             ),
             const SettingsPage(),
             const FileContentPage(filePath: '$loggerFolder/log_0.log'),
