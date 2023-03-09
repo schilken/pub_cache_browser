@@ -24,51 +24,8 @@ ToolBar getCustomToolBar(BuildContext context, WidgetRef ref) {
     titleWidth: 250,
     actions: [
       const ToolBarSpacer(spacerUnits: 3),
-      // ToolBarPullDownButton(
-      //   label: "Actions",
-      //   icon: CupertinoIcons.ellipsis_circle,
-      //   tooltipMessage: "Perform tasks with the selected items",
-      //   items: [
-      //     MacosPulldownMenuItem(
-      //       title: const Text("Choose Folder to scan"),
-      //       onTap: () async {
-      //         String? selectedDirectory = await FilePicker.platform
-      //             .getDirectoryPath(initialDirectory: '/Volumes');
-      //         if (selectedDirectory != null) {
-      //           appStateNotifier
-      //               .setFolder(folderPath: selectedDirectory);
-      //         }
-      //       },
-      //     ),
-      //     const MacosPulldownMenuDivider(),
-      //     MacosPulldownMenuItem(
-      //       title: const Text("Save last search result"),
-      //       onTap: () async {
-      //         final selectedFile = await FilePicker.platform.saveFile(
-      //             initialDirectory: '/Users/aschilken/flutterdev',
-      //             dialogTitle: 'Choose file to save search result',
-      //             fileName: 'search-result.txt');
-      //         if (selectedFile != null) {
-      //           searchOptionsNotifier.saveSearchResult(selectedFile);
-      //         }
-      //       },
-      //     ),
-      //     MacosPulldownMenuItem(
-      //       title: const Text("Combine search results"),
-      //       onTap: () async {
-      //         final selectedFiles = await FilePicker.platform.pickFiles(
-      //           initialDirectory: '/Users/aschilken/flutterdev',
-      //           dialogTitle: 'Choose search results to combine',
-      //           allowMultiple: true,
-      //         );
-      //         if (selectedFiles != null) {
-      //           searchOptionsNotifier.combineSearchResults(
-      //               filePaths: selectedFiles.paths);
-      //         }
-      //       },
-      //     ),
-      //   ],
-      // ),
+      _createToolBarPullDownButton(ref),
+//          const MacosPulldownMenuDivider(),
       const ToolBarSpacer(),
       const ToolBarDivider(),
       const ToolBarSpacer(),
@@ -91,15 +48,31 @@ ToolBar getCustomToolBar(BuildContext context, WidgetRef ref) {
           onChanged: searchOptions.setFilterEnabled,
         tooltipMessage: 'Filter Projects',
       ),
-      // const ToolBarDivider(),
-      // ToolBarIconButton(
-      //   label: "Share",
-      //   icon: const MacosIcon(
-      //     CupertinoIcons.share,
-      //   ),
-      //   onPressed: () => debugPrint("pressed"),
-      //   showLabel: false,
-      // ),
+    ],
+  );
+}
+
+ToolBarPullDownButton _createToolBarPullDownButton(
+  WidgetRef ref,
+) {
+  return ToolBarPullDownButton(
+    label: 'Actions',
+    icon: CupertinoIcons.ellipsis_circle,
+//        tooltipMessage: "Perform tasks with the selected items",
+    items: [
+      MacosPulldownMenuItem(
+        title: const Text('Delete old Packages'),
+        onTap: () async {},
+      ),
+      MacosPulldownMenuItem(
+        title: const Text('Delete .pub_cache Completely'),
+        onTap: () async {},
+      ),
+      const MacosPulldownMenuDivider(),
+      MacosPulldownMenuItem(
+        title: const Text('Display Package Size'),
+        onTap: () async {},
+      ),
     ],
   );
 }

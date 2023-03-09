@@ -54,7 +54,7 @@ class FilesView extends ConsumerWidget {
                   if (records == null) {
                     return const Center(child: Text('-'));
                   }
-                  return Text(records.length.toString());
+                  return Text('${records.length.toString()} Packages');
                 },
               ),
             ],
