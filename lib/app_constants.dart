@@ -18,6 +18,7 @@ enum DateRange {
 
 enum SortOrder {
   projectName('File Name'),
+  versionCount('Version Count'),
   diskUsage('Disk Usage');
 
   final String displayName;

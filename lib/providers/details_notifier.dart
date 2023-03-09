@@ -15,7 +15,6 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   late MemoryCache _cache;
 
   late FileSystemRepository _fileSystemRepository;
-  final _records = <DetailRecord>[];
 
   late SearchOptions _searchOptions;
   late String _defaultFolder;
@@ -42,12 +41,11 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   }
 
   Future<void> scan() async {
-    _records.clear();
+    _packageMap.clear();
     state = const AsyncValue.loading();
     state = await AsyncResult.guard(
       () => _createDetails(_defaultFolder),
     );
-    _records.addAll(state.value ?? []);
   }
 
   Future<List<DetailRecord>> _createDetails(String directory) async {
@@ -73,10 +71,15 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     }
     return Future.value(
       _packageMap.values.toList()
-        ..sort(
-          (r1, r2) => r1.packageName.compareTo(r2.packageName),
-        ),
+        ..sort(sorter),
     );
+  }
+
+  int sorter(DetailRecord a, DetailRecord b) {
+    if (_sortOrder == SortOrder.versionCount.displayName) {
+      return b.versionCount.compareTo(a.versionCount);
+    }
+    return a.packageName.compareTo(b.packageName);
   }
 
   DetailRecord _update(DetailRecord record, String versionString) {
@@ -149,6 +152,8 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   //     highlights: _highlights,
   //   );
   // }
+
+
 }
 
 final detailsNotifier =
