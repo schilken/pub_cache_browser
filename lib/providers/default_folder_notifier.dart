@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
@@ -8,8 +10,9 @@ class DefaultFolderNotifier extends Notifier<String> {
 
   @override
   String build() {
-    _preferencesRepository = ref.read(preferencesRepositoryProvider);
-    final currentValue = _preferencesRepository.defaultFolder;
+    final userHomeDirectory = Platform.environment['HOME'];
+
+    final currentValue = '$userHomeDirectory/.pub-cache/hosted/pub.dev';
     return currentValue;
   }
 

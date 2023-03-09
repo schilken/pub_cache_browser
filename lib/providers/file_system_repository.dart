@@ -4,33 +4,29 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mixin_logger/mixin_logger.dart' as log;
+import 'package:path/path.dart' as p;
+
+import '../models/detail_record.dart';
 
 // find . -type d -name "build" -size +100cM -exec du -s -k  {}  \;
 class FileSystemRepository {
   String? currentDirectory;
 
-  Future<List<String>> getEpubFiles(String directory) async {
-    log.i('getEpubFiles $directory');
-    const executable = 'find';
-    final arguments = [
-      '.',
-      '-type',
-      'f',
-      '-name',
-      '*.epub',
-    ];
-    final process = await Process.run(
-      executable,
-      arguments,
-      workingDirectory: directory,
-    );
-    if (process.exitCode != 0) {
-      debugPrint('stderr: ${process.stderr}');
-      return [];
-    } else {
-      final lines = (process.stdout as String).split('\n');
-      return lines;
-    }
+  Future<List<DetailRecord>> getPackageDirectories(String directory) async {
+    log.i('getPackageDirectories $directory');
+    final dir = Directory(directory);
+    final entities = dir.listSync();
+    return entities
+        .map((entity) => p.basename(entity.path))
+        .where((packageName) => !packageName.startsWith('.'))
+        .map(
+          (path) => DetailRecord(
+            packageName: p.basename(path),
+            directoryPath: p.split(directory).last,
+          ),
+        )
+        .toList()
+      ..sort((r1, r2) => r1.packageName.compareTo(r2.packageName));
   }
 
   Future<String> readFile(String filePath) async {

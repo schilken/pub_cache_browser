@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 import '../components/components.dart';
-import '../models/detail.dart';
+import '../models/detail_record.dart';
 import '../providers/package_content_notifier.dart';
 import 'detail_page.dart';
 import 'package_info_page.dart';
@@ -19,7 +19,7 @@ class MainPage extends ConsumerStatefulWidget {
 class _MainPageState extends ConsumerState<MainPage> {
 //  Detail? _selectedDetail;
 
-  void _showEbook(Detail selectedDetail, BuildContext context) {
+  void _showEbook(DetailRecord selectedDetail, BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<DetailPage>(
         builder: (_) {

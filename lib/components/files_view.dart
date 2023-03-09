@@ -8,11 +8,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 import '../components/components.dart';
-import '../models/detail.dart';
+import '../models/detail_record.dart';
 import '../providers/providers.dart';
 import '../utils/typedefs.dart';
 
-typedef DetailCallback = void Function(Detail);
+typedef DetailCallback = void Function(DetailRecord);
 
 class FilesView extends ConsumerWidget {
   const FilesView({
@@ -26,6 +26,7 @@ class FilesView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final detailListAsyncValue = ref.watch(detailsNotifier);
     return Column(
       children: [
         Container(
@@ -33,27 +34,6 @@ class FilesView extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(12, 20, 20, 20),
           child: Row(
             children: [
-              PushButton(
-                buttonSize: ButtonSize.large,
-                isSecondary: true,
-                color: Colors.white,
-                child: const Text('Choose Folder to scan'),
-                onPressed: () async {
-                  final userHomeDirectory = Platform.environment['HOME'];
-                  String? selectedDirectory = await FilePicker.platform
-                      .getDirectoryPath(initialDirectory: userHomeDirectory);
-                  if (selectedDirectory != null) {
-//                    ref.read(cacheProvider).clear();
-                    ref
-                        .read(defaultFolderNotifier.notifier)
-                        .setFolder(selectedDirectory);
-                    ref.read(detailsNotifier.notifier).refreshFileList();
-                  }
-                },
-              ),
-              const SizedBox(
-                width: 8,
-              ),
               SelectableText(
                 ref.watch(defaultFolderNotifier),
               ),
@@ -68,69 +48,56 @@ class FilesView extends ConsumerWidget {
                 onPressed: () =>
                     ref.read(detailsNotifier.notifier).refreshFileList(),
               ),
-              ref.watch(detailsNotifier).when(
-                    inProgress: () => const CupertinoActivityIndicator(),
-                    loaded: (a, fileCount, b, c, d) =>
-                        Text('$fileCount Projects'),
-                  ),
+              // ref.watch(detailsNotifier).when(
+              //       inProgress: () => const CupertinoActivityIndicator(),
+              //       loaded: (a, fileCount, b, c, d) =>
+              //           Text('$fileCount Projects'),
+              //     ),
             ],
           ),
         ),
-        ref.watch(detailsNotifier).when(
-              inProgress: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32),
-                  child: CupertinoActivityIndicator(),
-                ),
-              ),
-              loaded: (
-                details,
-                fileCount,
-                message,
-                commandAsString,
-                highlights,
-              ) {
-                if (message != null) {
-                  return MessageBar(
-                    message: message,
-                    onDismiss: () =>
-                        ref.read(detailsNotifier.notifier).removeMessage(),
-                  );
+        Expanded(
+          child: AsyncValueWidget<List<DetailRecord>?>(
+              value: detailListAsyncValue,
+              data: (records) {
+                if (records == null) {
+                  return const Center(child: Text('Not yet scanned'));
                 }
-                if (details.isEmpty) {
-                  return const Center(
-                      child: Padding(
-                    padding: EdgeInsets.only(top: 32),
-                    child: Text('No search result.'),
-                  ));
-                } else {
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: ListView.separated(
-                        controller: ScrollController(),
-                        itemCount: details.length,
-                        itemBuilder: (context, index) {
-                          final detail = details[index];
-                          return DetailTile(
-                            detail: detail,
-                            highlights: highlights ?? [],
-                            onClick: () => onSelect(detail),
-                            onAction: onAction,
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return const Divider(
-                            thickness: 2,
-                          );
-                        },
-                      ),
-                    ),
-                  );
+                if (records.isEmpty) {
+                  return const Center(child: Text('No paackages found'));
                 }
-              },
-            ),
+                return RecordsView(records, ref);
+              }),
+        ),
       ],
+    );
+  }
+}
+
+class RecordsView extends StatelessWidget {
+  const RecordsView(
+    this.records,
+    this.ref, {
+    super.key,
+  });
+  final List<DetailRecord> records;
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: records.length,
+      itemBuilder: (_, index) {
+        final record = records[index];
+        return Material(
+          child: ListTile(
+            title: Text(
+              record.packageName,
+            ),
+            subtitle: Text(record.directoryPath),
+          ),
+        );
+      },
     );
   }
 }

@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:path/path.dart' as p;
 
-import '../models/detail.dart';
+import '../models/detail_record.dart';
 import '../providers/providers.dart';
 import '../utils/typedefs.dart';
 import 'highlighted_text.dart';
@@ -20,7 +20,7 @@ class DetailTile extends StatefulWidget {
     required this.onClick,
     this.onAction,
   });
-  final Detail detail;
+  final DetailRecord detail;
   final List<String> highlights;
   final VoidCallback onClick;
   final TwoStringsCallback? onAction;
@@ -43,7 +43,7 @@ class _DetailTileState extends State<DetailTile> {
           const SizedBox(width: 12),
           Expanded(
             child: HighlightedText(
-              text: widget.detail.fileName,
+              text: widget.detail.packageName,
               style: Theme.of(context).textTheme.titleLarge!,
               highlights: widget.highlights,
             ),
@@ -79,14 +79,14 @@ class ListTilePullDownMenu extends ConsumerWidget {
     this.onAction,
   });
 
-  final Detail detail;
+  final DetailRecord detail;
   final TwoStringsCallback? onAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filePath = p.join(
       detail.directoryPath,
-      detail.fileName,
+      detail.packageName,
     );
     return MacosPulldownButton(
       icon: CupertinoIcons.ellipsis_circle,
@@ -115,7 +115,7 @@ class ListTilePullDownMenu extends ConsumerWidget {
           onTap: () {
             ref
                 .read(settingsNotifier.notifier)
-                .addExcludedProject(detail.fileName);
+                .addExcludedProject(detail.packageName);
             BotToast.showText(
               text: 'Project is now on List of excluded Projects.',
               duration: const Duration(seconds: 3),
