@@ -140,15 +140,15 @@ class ListTilePullDownMenu extends ConsumerWidget {
       icon: CupertinoIcons.ellipsis_circle,
       items: [
         MacosPulldownMenuItem(
-          title: const Text('Show File in Finder'),
+          title: const Text('Show Package Directory in Finder'),
           onTap: () => ref.read(appCommandsProvider).showInFinder(filePath),
         ),
         MacosPulldownMenuItem(
-          title: const Text('Open Terminal in Folder'),
+          title: const Text('Open Terminal in Package Directory'),
           onTap: () => ref.read(appCommandsProvider).showInTerminal(filePath),
         ),
         MacosPulldownMenuItem(
-          title: const Text('Copy File Path to Clipboard'),
+          title: const Text('Copy Package Directory to Clipboard'),
           onTap: () => ref.read(appCommandsProvider).copyToClipboard(filePath),
         ),
         const MacosPulldownMenuDivider(),
@@ -168,18 +168,20 @@ class ListTilePullDownMenu extends ConsumerWidget {
         MacosPulldownMenuItem(
           title: const Text('Copy Package and Open it in VSCode'),
           onTap: () {
-            // ref
-            //     .read(settingsNotifier.notifier)
-            //     .addExcludedProject(record.packageName);
-            // BotToast.showText(
-            //   text: 'Project is now on List of excluded Projects.',
-            //   duration: const Duration(seconds: 3),
-            //   align: const Alignment(0, 0.3),
-            // );
           },
         ),
         MacosPulldownMenuItem(
-          title: const Text('Package Info'),
+          title: const Text('Find local Projects using this Package'),
+          onTap: () => Future.delayed(
+            Duration(milliseconds: 10),
+            () => onAction?.call(
+              'packageInfo',
+              filePath,
+            ),
+          ),
+        ),
+        MacosPulldownMenuItem(
+          title: const Text('Show Package Info'),
           onTap: () => Future.delayed(
             Duration(milliseconds: 10),
             () => onAction?.call(
