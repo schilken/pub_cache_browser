@@ -1,6 +1,5 @@
 export 'async_value_widget.dart';
 export 'chip_list_editor.dart';
-export 'detail_tile.dart';
 export 'files_view.dart';
 export 'get_custom_toolbar.dart';
 export 'highlighted_text.dart';
