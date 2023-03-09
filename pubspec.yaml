@@ -1,0 +1,53 @@
+name: pub_cache_browser
+description: List all packages in HOME/.pub_cache and provide some useful actions
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  bot_toast: ^4.0.3
+  collection: ^1.16.0
+  cupertino_icons: ^1.0.4
+  desktop_multi_window: ^0.2.0
+  epub_view:
+    path: ../_forks/packages.flutter/packages/epub_view
+  equatable: ^2.0.3
+  file_picker: ^4.6.1
+  flutter:
+    sdk: flutter
+  flutter_hooks: ^0.18.5
+  flutter_html: ^3.0.0-alpha.6
+  flutter_markdown: ^0.6.10+5
+  flutter_riverpod: ^2.1.1
+  freezed_annotation: ^2.1.0
+  #  macos_ui: 1.7.6
+  macos_ui: ^1.12.1
+  material_design_icons_flutter: ^5.0.6996
+  meta: ^1.7.0
+  mixin_logger: ^0.0.3
+  path: ^1.8.1
+  path_provider: ^2.0.11
+  provider: ^6.0.2
+  shared_preferences: ^2.0.15
+  tuple: ^2.0.0
+  yaml: ^3.1.1
+
+dependency_overrides:
+  epubx:
+    path: ../_forks/epubx.dart
+  xml: ^6.0.1
+  collection: ^1.16.0
+
+dev_dependencies:
+  build_runner: null
+  custom_lint: ^0.2.12
+  flutter_lints: ^2.0.1
+  flutter_test:
+    sdk: flutter
+  freezed: ^2.1.1
+  riverpod_lint: ^1.1.2
+
+flutter:
+  uses-material-design: true
