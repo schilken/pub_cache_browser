@@ -1,22 +1,19 @@
 class DiskUsageRecord {
-  final String directoryPath;
+  final String packageName;
   final int size;
-  final bool isSelected;
   DiskUsageRecord({
-    required this.directoryPath,
+    required this.packageName,
     required this.size,
-    required this.isSelected,
   });
 
   DiskUsageRecord copyWith({
-    String? directoryPath,
+    String? packageName,
     int? size,
     bool? isSelected,
   }) {
     return DiskUsageRecord(
-      directoryPath: directoryPath ?? this.directoryPath,
+      packageName: packageName ?? this.packageName,
       size: size ?? this.size,
-      isSelected: isSelected ?? this.isSelected,
     );
   }
 
@@ -24,12 +21,10 @@ class DiskUsageRecord {
   bool operator ==(covariant DiskUsageRecord other) {
     if (identical(this, other)) return true;
 
-    return other.directoryPath == directoryPath &&
-        other.size == size &&
-        other.isSelected == isSelected;
+    return other.packageName == packageName && other.size == size;
   }
 
   @override
   int get hashCode =>
-      directoryPath.hashCode ^ size.hashCode ^ isSelected.hashCode;
+      packageName.hashCode ^ size.hashCode;
 }

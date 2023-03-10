@@ -4,9 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mixin_logger/mixin_logger.dart' as log;
 import 'package:path/path.dart' as p;
+import 'package:tuple/tuple.dart';
 
 import '../app_constants.dart';
 import '../models/detail_record.dart';
+import 'disk_usage_repository.dart';
 import 'providers.dart';
 
 typedef AsyncResult = AsyncValue<List<DetailRecord>?>;
@@ -15,6 +17,7 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   late MemoryCache _cache;
 
   late FileSystemRepository _fileSystemRepository;
+  late DiskUsageRepository _diskUsageRepository;
 
   late SearchOptions _searchOptions;
   late String _defaultFolder;
@@ -23,12 +26,13 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
 //  late SettingsState _settings;
 //  final _sectionsMap = <String, List<String>>{};
 
-  Map<String, DetailRecord> _packageMap = {};
+  final Map<String, DetailRecord> _packageMap = {};
+  final Map<String, int> _packageSizeMap = {};
 
   @override
   FutureOr<List<DetailRecord>?> build() async {
     _fileSystemRepository = ref.read(fileSystemRepositoryProvider);
-
+    _diskUsageRepository = ref.read(diskUsageRepositoryProvider);
     _cache = ref.watch(cacheProvider);
     _sortOrder = ref.watch(sortOrderNotifier);
     // _displayMode = ref.watch(displayModeNotifier);
@@ -49,31 +53,71 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     );
   }
 
+  Future<void> addPackageSizes() async {
+    state = const AsyncValue.loading();
+    _packageSizeMap.clear();
+    final diskUsageRecords =
+        await _diskUsageRepository.scanDiskUsage(_defaultFolder);
+    for (final diskUsageRecord in diskUsageRecords) {
+      final nameAndVersion = splitName(diskUsageRecord.packageName);
+      if (nameAndVersion == null) {
+        continue;
+      }
+      _packageSizeMap.update(
+        nameAndVersion.item1,
+        (totalSize) => totalSize + diskUsageRecord.size,
+        ifAbsent: () => diskUsageRecord.size,
+      );
+    }
+    state = await AsyncResult.guard(
+      () => _enhanceDetails(_defaultFolder),
+    );
+  }
+
+  Future<List<DetailRecord>> _enhanceDetails(String directory) async {
+    for (final packageName in _packageMap.keys) {
+      final totalSize = _packageSizeMap[packageName];
+      _packageMap[packageName] =
+          _packageMap[packageName]!.copyWith(sizeInKB: totalSize);
+    }
+    return Future.value(
+      _packageMap.values.toList()..sort(sorter),
+    );
+  }
+
   Future<List<DetailRecord>> _createDetails(String directory) async {
     final directoryNames =
         _fileSystemRepository.getPackageDirectories(directory);
     for (final packageVersion in directoryNames) {
-      final parts = packageVersion.split('-');
-      if (parts.length != 2) {
+      final nameAndVersion = splitName(packageVersion);
+      if (nameAndVersion == null) {
         continue;
       }
-      final packageName = parts.first;
-      final versionString = parts.last;
       _packageMap.update(
-        packageName,
-        (package) => _update(package, versionString),
+        nameAndVersion.item1,
+        (package) => _update(
+          package,
+          nameAndVersion.item2,
+        ),
         ifAbsent: () => DetailRecord(
-          packageName: packageName,
+          packageName: nameAndVersion.item1,
           directoryPath: p.split(directory).last,
           versionCount: 1,
-          versions: [versionString],
+          versions: [nameAndVersion.item2],
         ),
       );
     }
     return Future.value(
-      _packageMap.values.toList()
-        ..sort(sorter),
+      _packageMap.values.toList()..sort(sorter),
     );
+  }
+
+  Tuple2<String, String>? splitName(String nameWithVersion) {
+    final parts = nameWithVersion.split('-');
+    if (parts.length != 2) {
+      return null;
+    }
+    return Tuple2<String, String>(parts.first, parts.last);
   }
 
   int sorter(DetailRecord a, DetailRecord b) {
@@ -90,7 +134,6 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     );
   }
 
-
   Future<void> refreshFileList() async {
     _cache.clear();
     _packageMap.clear();
@@ -100,7 +143,6 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   List<String> get _highlights => _searchOptions.searchWord.isNotEmpty
       ? _searchOptions.searchWord.split(' ')
       : ['@-@'];
-
 
   List<DetailRecord> _filterDetails(
       List<DetailRecord> fullList, List<String> highLights) {
@@ -127,8 +169,7 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     }
     return filteredList;
   }
-  
- 
+
   // Future<List<DetailRecord>> _getAllDetails() async {
   //   if (_fileList.isEmpty) {
   //     _fileList = await _fileSystemRepository.getPackages(_defaultFolder);
@@ -153,12 +194,9 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   //     highlights: _highlights,
   //   );
   // }
-
-
 }
 
 final detailsNotifier =
     AsyncNotifierProvider<DetailsNotifier, List<DetailRecord>?>(
   DetailsNotifier.new,
 );
-

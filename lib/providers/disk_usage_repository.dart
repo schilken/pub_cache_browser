@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:path/path.dart' as p;
 import '../models/disk_usage_record.dart';
 
 // find . -type d -name "build" -size +100cM -exec du -s -k  {}  \;
@@ -11,24 +11,16 @@ class DiskUsageRepository {
   String? currentDirectory;
 
   Future<List<String>> _getDiskUsage(String directory) async {
-    const executable = 'find';
+    const executable = 'du';
     final arguments = [
-      '.',
-      '-type',
-      'd',
-      '-name',
-      'build',
-      '-exec',
-      'du',
-      '-s',
+      '-d 1',
       '-k',
-      '{}',
-      '+'
+      directory,
     ];
     final process = await Process.run(
       executable,
       arguments,
-      workingDirectory: directory,
+      runInShell: true,
     );
     if (process.exitCode != 0) {
       debugPrint('stderr: ${process.stderr}');
@@ -47,9 +39,11 @@ class DiskUsageRepository {
       final String? pathName = matchLogLine[2];
       if (usageInKB != null && pathName != null) {
         return DiskUsageRecord(
-            directoryPath: pathName.trim().replaceFirst('./', ''),
+          packageName: p.basename(
+            pathName.trim(),
+          ),
             size: int.parse(usageInKB),
-            isSelected: false);
+        );
       }
     }
     return null;
@@ -60,15 +54,12 @@ class DiskUsageRepository {
     final discUsageLines = await _getDiskUsage(
       directoryPath,
     );
-    // discUsageLines.forEach((element) {
-    //   debugPrint(element);
-    // });
     final records = discUsageLines
-        .map((line) => _parseDiskUsageLine(line))
+        .map(_parseDiskUsageLine)
         .whereType<DiskUsageRecord>()
         .cast<DiskUsageRecord>()
         .toList();
-    return records..sort((r1, r2) => r2.size.compareTo(r1.size));
+    return records;
   }
 }
 

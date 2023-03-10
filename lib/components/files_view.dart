@@ -113,7 +113,13 @@ class RecordsView extends StatelessWidget {
               '${record.packageName} - ${record.versionCount}',
             ),
           ),
-          subtitle: Text('Versions: ${record.versions.join(", ")}'),
+          subtitle: Row(
+            children: [
+              Text('Versions: ${record.versions.join(", ")}'),
+              if (record.sizeInKB != null)
+                Text('Total Size: ${record.sizeInKB} KB'),
+            ],
+          ),
         );
       },
     );
