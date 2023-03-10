@@ -69,12 +69,6 @@ ToolBarPullDownButton _createToolBarPullDownButton(
         onTap: () async {},
       ),
       const MacosPulldownMenuDivider(),
-      MacosPulldownMenuItem(
-        title: const Text('Display Package Sizes'),
-        onTap: () async {
-          ref.read(detailsNotifier.notifier).addPackageSizes();
-        },
-      ),
     ],
   );
 }

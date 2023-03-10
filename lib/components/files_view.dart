@@ -12,6 +12,8 @@ import 'package:path/path.dart' as p;
 import '../components/components.dart';
 import '../models/detail_record.dart';
 import '../providers/providers.dart';
+import '../utils/app_sizes.dart';
+import '../utils/extensions.dart';
 import '../utils/typedefs.dart';
 
 typedef DetailCallback = void Function(DetailRecord);
@@ -29,6 +31,7 @@ class FilesView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final detailListAsyncValue = ref.watch(detailsNotifier);
+    final totalSize = ref.watch(totalSizeProvider);
     return Column(
       children: [
         Container(
@@ -58,7 +61,10 @@ class FilesView extends ConsumerWidget {
                   }
                   return Text('${records.length} Packages');
                 },
+                spinnerRadius: 12,
               ),
+              gapWidth12,
+              Text('${totalSize.toMegaBytes}'),
             ],
           ),
         ),
@@ -117,7 +123,7 @@ class RecordsView extends StatelessWidget {
             children: [
               Text('Versions: ${record.versions.join(", ")}'),
               if (record.sizeInKB != null)
-                Text('Total Size: ${record.sizeInKB} KB'),
+                Text('Total Size: ${record.sizeInKB!.toMegaBytes}'),
             ],
           ),
         );

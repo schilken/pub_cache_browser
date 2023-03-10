@@ -51,9 +51,10 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     state = await AsyncResult.guard(
       () => _createDetails(_defaultFolder),
     );
+    await _addPackageSizes();
   }
 
-  Future<void> addPackageSizes() async {
+  Future<void> _addPackageSizes() async {
     state = const AsyncValue.loading();
     _packageSizeMap.clear();
     final diskUsageRecords =
@@ -169,34 +170,20 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     }
     return filteredList;
   }
-
-  // Future<List<DetailRecord>> _getAllDetails() async {
-  //   if (_fileList.isEmpty) {
-  //     _fileList = await _fileSystemRepository.getPackages(_defaultFolder);
-  //   }
-  //   final details = _fileList.map((pathName) {
-  //     return DetailRecord(
-  //       packageName: p.basename(pathName),
-  //       directoryPath: p.dirname(p.join(_defaultFolder, pathName)),
-  //     );
-  //   }).toList();
-  //   if (_sortOrder == SortOrder.projectName.displayName) {
-  //     details.sort((a, b) => a.packageName.compareTo(b.packageName));
-  //   }
-  //   return details;
-  // }
-
-  // void removeMessage() {
-  //   log.i('removeMessage');
-  //   state = DetailsState.loaded(
-  //     details: [],
-  //     fileCount: 0,
-  //     highlights: _highlights,
-  //   );
-  // }
+  
 }
 
 final detailsNotifier =
     AsyncNotifierProvider<DetailsNotifier, List<DetailRecord>?>(
   DetailsNotifier.new,
 );
+
+final totalSizeProvider = Provider<int>((ref) {
+  final diskUsageAsyncValue = ref.watch(detailsNotifier);
+  return diskUsageAsyncValue.maybeMap<int>(
+      data: (data) {
+        final records = data.value ?? [];
+        return records.fold(0, (sum, r) => sum + (r.sizeInKB ?? 0));
+      },
+      orElse: () => 0);
+});
