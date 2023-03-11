@@ -34,20 +34,6 @@ ToolBar getCustomToolBar(BuildContext context, WidgetRef ref) {
         onChanged: searchOptions.setSearchWord,
         onSubmitted: searchOptions.setSearchWord,
       ),
-      ToolbarWidgetToggle(
-        value: searchOptionState.caseSensitive,
-          onChanged: searchOptions.setCaseSensitiv,
-          child: const Text('Aa'),
-        tooltipMessage: 'Search case sentitiv',
-      ),
-      ToolbarWidgetToggle(
-          child: const MacosIcon(
-            MdiIcons.filterOutline,
-          ),
-        value: searchOptionState.filterEnabled,
-          onChanged: searchOptions.setFilterEnabled,
-        tooltipMessage: 'Filter Projects',
-      ),
     ],
   );
 }

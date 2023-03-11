@@ -32,6 +32,7 @@ class FilesView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final detailListAsyncValue = ref.watch(detailsNotifier);
     final totalSize = ref.watch(totalSizeProvider);
+    final highlights = ref.watch(detailsNotifier.notifier).highlights;
     return Column(
       children: [
         Container(
@@ -80,6 +81,7 @@ class FilesView extends ConsumerWidget {
                 }
               return RecordsView(
                 records,
+                highlights,
                 ref,
                 onAction: onAction,
               );
@@ -94,13 +96,15 @@ class FilesView extends ConsumerWidget {
 class RecordsView extends StatelessWidget {
   const RecordsView(
     this.records,
+    this.highlights,
     this.ref, {
-    this.onAction,  
+    this.onAction, 
     super.key,
   });
   final List<DetailRecord> records;
   final TwoStringsCallback? onAction;
   final WidgetRef ref;
+  final List<String> highlights;
 
   @override
   Widget build(BuildContext context) {
@@ -114,14 +118,17 @@ class RecordsView extends StatelessWidget {
             onAction: onAction,
           ),
           title: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              '${record.packageName} - ${record.versionCount}',
+            padding: const EdgeInsets.all(8),
+            child: HighlightedText(
+              text: '${record.packageName} - ${record.versionCount}',
+              highlights: highlights,
             ),
           ),
           subtitle: Row(
             children: [
-              Text('Versions: ${record.versions.join(", ")}'),
+              HighlightedText(
+                  text: 'Versions: ${record.versions.join(", ")}',
+                  highlights: highlights),
               if (record.sizeInKB != null)
                 Text('Total Size: ${record.sizeInKB!.toMegaBytes}'),
             ],

@@ -41,9 +41,16 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     _defaultFolder = ref.watch(defaultFolderNotifier);
     Future.delayed(const Duration(milliseconds: 1), scan);
     print(
-        'DetailsNotifier.build _defaultFolder: $_defaultFolder, _sortOrder: $_sortOrder');
+        'DetailsNotifier.build _defaultFolder: $_defaultFolder, _sortOrder: $_sortOrder, _searchOptions: $_searchOptions ');
     return null;
   }
+
+  List<String> get highlights => _searchOptions.searchWord.isNotEmpty
+      ? _searchOptions.searchWord
+          .split(' ')
+          .where((item) => item.isNotEmpty)
+          .toList()
+      : [];
 
   Future<void> scan() async {
     _packageMap.clear();
@@ -51,10 +58,24 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     state = await AsyncResult.guard(
       () => _createDetails(_defaultFolder),
     );
-    await _addPackageSizes();
   }
 
-  Future<void> _addPackageSizes() async {
+  Future<List<DetailRecord>> _createDetails(String directory) async {
+    _fillPackageMap(directory);
+    await _fillPackageSizeMap();
+    final fullList = await _enhanceDetailsWithSize();
+    var filteredList = fullList;
+    if (highlights.isNotEmpty) {
+      //  && _searchOptions.filterEnabled) {
+      filteredList = _filteredDetails(
+        fullList,
+        highlights,
+      )..sort(sorter);
+    }
+    return filteredList;
+  }
+
+  Future<void> _fillPackageSizeMap() async {
     state = const AsyncValue.loading();
     _packageSizeMap.clear();
     final diskUsageRecords =
@@ -70,23 +91,18 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
         ifAbsent: () => diskUsageRecord.size,
       );
     }
-    state = await AsyncResult.guard(
-      () => _enhanceDetails(_defaultFolder),
-    );
   }
 
-  Future<List<DetailRecord>> _enhanceDetails(String directory) async {
+  Future<List<DetailRecord>> _enhanceDetailsWithSize() async {
     for (final packageName in _packageMap.keys) {
       final totalSize = _packageSizeMap[packageName];
       _packageMap[packageName] =
           _packageMap[packageName]!.copyWith(sizeInKB: totalSize);
     }
-    return Future.value(
-      _packageMap.values.toList()..sort(sorter),
-    );
+    return _packageMap.values.toList();
   }
 
-  Future<List<DetailRecord>> _createDetails(String directory) async {
+  void _fillPackageMap(String directory) {
     final directoryNames =
         _fileSystemRepository.getPackageDirectories(directory);
     for (final packageVersion in directoryNames) {
@@ -108,9 +124,6 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
         ),
       );
     }
-    return Future.value(
-      _packageMap.values.toList()..sort(sorter),
-    );
   }
 
   Tuple2<String, String>? splitName(String nameWithVersion) {
@@ -141,26 +154,18 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     await scan();
   }
 
-  List<String> get _highlights => _searchOptions.searchWord.isNotEmpty
-      ? _searchOptions.searchWord.split(' ')
-      : ['@-@'];
-
-  List<DetailRecord> _filterDetails(
-      List<DetailRecord> fullList, List<String> highLights) {
+  List<DetailRecord> _filteredDetails(
+    List<DetailRecord> fullList,
+    List<String> highlights,
+  ) {
     final filteredList = <DetailRecord>[];
-    final mayBeLowerCasedHighlights = _searchOptions.caseSensitive
-        ? highLights
-        : highLights.map((word) => word.toLowerCase()).toList();
     for (final detail in fullList) {
-      final joinedDetails = detail.directoryPath;
-      final mayBeLowerCasedCommits = _searchOptions.caseSensitive
-          ? joinedDetails
-          : joinedDetails.toLowerCase();
+      final joinedDetails = detail.packageName;
       var isContained = false;
       for (var ix = 0;
-          ix < mayBeLowerCasedHighlights.length && !isContained;
+          ix < highlights.length && !isContained;
           ix++) {
-        if (mayBeLowerCasedCommits.contains(mayBeLowerCasedHighlights[ix])) {
+        if (joinedDetails.contains(highlights[ix])) {
           isContained = true;
         }
       }
@@ -185,5 +190,6 @@ final totalSizeProvider = Provider<int>((ref) {
         final records = data.value ?? [];
         return records.fold(0, (sum, r) => sum + (r.sizeInKB ?? 0));
       },
-      orElse: () => 0);
+    orElse: () => 0,
+  );
 });
