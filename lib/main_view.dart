@@ -23,18 +23,15 @@ class MainView extends ConsumerStatefulWidget {
 class _MainViewState extends ConsumerState<MainView> {
 
   int sidebarPageIndex = 0;
+  String pubLogFile =
+      '${Platform.environment['HOME']}/.pub-cache/log/pub_log.txt';
 
   void _changeSidebarIndex(int newIndex) {
     if (newIndex == 0) {
       final userHomeDirectory = Platform.environment['HOME'];
       final currentValue = '$userHomeDirectory/.pub-cache/hosted/pub.dev';
       ref.read(defaultFolderNotifier.notifier).setFolder(currentValue);
-    } else if (newIndex == 1) {
-      final userHomeDirectory = Platform.environment['HOME'];
-      final currentValue =
-          '$userHomeDirectory/.pub-cache/hosted/pub.dartlang.org';
-      ref.read(defaultFolderNotifier.notifier).setFolder(currentValue);
-    }
+    } 
     setState(() {
       sidebarPageIndex = newIndex;
     });
@@ -92,7 +89,7 @@ class _MainViewState extends ConsumerState<MainView> {
               ),
               SidebarItem(
                 leading: MacosIcon(CupertinoIcons.search),
-                label: Text('pub.dartlang.org'),
+                label: Text('pub_log.txt'),
               ),
               SidebarItem(
                 leading: MacosIcon(CupertinoIcons.gear),
@@ -122,11 +119,7 @@ class _MainViewState extends ConsumerState<MainView> {
                 return const MainPage();
               },
             ),
-            CupertinoTabView(
-              builder: (_) {
-                return const MainPage();
-              },
-            ),
+            FileContentPage(filePath: pubLogFile),
             const SettingsPage(),
             const FileContentPage(filePath: '$loggerFolder/log_0.log'),
             const HelpPage(),
