@@ -130,7 +130,13 @@ class RecordsView extends StatelessWidget {
                   text: 'Versions: ${record.versions.join(", ")}',
                 highlights: highlights,
               ),
-              Text('Total Size: ${record.sizeInKB.toMegaBytes}'),
+              gapWidth8,
+              Text(
+                'Total Size: ${record.sizeInKB.toMegaBytes}',
+                style: TextStyle(
+                  fontSize: 15,
+                ),
+              ),
             ],
           ),
         );
