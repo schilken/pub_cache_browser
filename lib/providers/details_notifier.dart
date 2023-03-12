@@ -53,7 +53,6 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
       : [];
 
   Future<void> scan() async {
-    _packageMap.clear();
     state = const AsyncValue.loading();
     state = await AsyncResult.guard(
       () => _createDetails(_defaultFolder),
@@ -61,8 +60,12 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   }
 
   Future<List<DetailRecord>> _createDetails(String directory) async {
-    _fillPackageMap(directory);
-    await _fillPackageSizeMap();
+    if (_packageMap.isEmpty) {
+      _fillPackageMap(directory);
+    }
+    if (_packageSizeMap.isEmpty) {
+      await _fillPackageSizeMap();
+    }
     final fullList = await _enhanceDetailsWithSize();
     var filteredList = fullList;
     if (highlights.isNotEmpty) {
@@ -70,14 +73,13 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
       filteredList = _filteredDetails(
         fullList,
         highlights,
-      )..sort(sorter);
+      );
     }
-    return filteredList;
+    return filteredList..sort(sorter);
   }
 
   Future<void> _fillPackageSizeMap() async {
     state = const AsyncValue.loading();
-    _packageSizeMap.clear();
     final diskUsageRecords =
         await _diskUsageRepository.scanDiskUsage(_defaultFolder);
     for (final diskUsageRecord in diskUsageRecords) {
@@ -137,6 +139,8 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   int sorter(DetailRecord a, DetailRecord b) {
     if (_sortOrder == SortOrder.versionCount.displayName) {
       return b.versionCount.compareTo(a.versionCount);
+    } else if (_sortOrder == SortOrder.diskUsage.displayName) {
+      return b.sizeInKB.compareTo(a.sizeInKB);
     }
     return a.packageName.compareTo(b.packageName);
   }
@@ -149,8 +153,9 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   }
 
   Future<void> refreshFileList() async {
-    _cache.clear();
+//    _cache.clear();
     _packageMap.clear();
+    _packageSizeMap.clear();
     await scan();
   }
 
@@ -162,9 +167,7 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     for (final detail in fullList) {
       final joinedDetails = detail.packageName;
       var isContained = false;
-      for (var ix = 0;
-          ix < highlights.length && !isContained;
-          ix++) {
+      for (var ix = 0; ix < highlights.length && !isContained; ix++) {
         if (joinedDetails.contains(highlights[ix])) {
           isContained = true;
         }
@@ -175,7 +178,6 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     }
     return filteredList;
   }
-  
 }
 
 final detailsNotifier =
@@ -186,10 +188,10 @@ final detailsNotifier =
 final totalSizeProvider = Provider<int>((ref) {
   final diskUsageAsyncValue = ref.watch(detailsNotifier);
   return diskUsageAsyncValue.maybeMap<int>(
-      data: (data) {
-        final records = data.value ?? [];
-        return records.fold(0, (sum, r) => sum + (r.sizeInKB ?? 0));
-      },
+    data: (data) {
+      final records = data.value ?? [];
+      return records.fold(0, (sum, r) => sum + r.sizeInKB);
+    },
     orElse: () => 0,
   );
 });

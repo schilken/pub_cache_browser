@@ -128,9 +128,9 @@ class RecordsView extends StatelessWidget {
             children: [
               HighlightedText(
                   text: 'Versions: ${record.versions.join(", ")}',
-                  highlights: highlights),
-              if (record.sizeInKB != null)
-                Text('Total Size: ${record.sizeInKB!.toMegaBytes}'),
+                highlights: highlights,
+              ),
+              Text('Total Size: ${record.sizeInKB.toMegaBytes}'),
             ],
           ),
         );

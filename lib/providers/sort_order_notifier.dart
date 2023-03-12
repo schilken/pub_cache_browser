@@ -16,6 +16,7 @@ class SortOrderNotifier extends Notifier<String> {
   static final sortOrders = <String>[
     SortOrder.projectName.displayName,
     SortOrder.versionCount.displayName,
+    SortOrder.diskUsage.displayName,
   ];
 
   Future<void> setValue(String newValue) async {

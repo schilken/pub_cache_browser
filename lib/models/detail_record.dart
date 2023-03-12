@@ -6,14 +6,14 @@ class DetailRecord {
   final String directoryPath;
   final int versionCount;
   final List<String> versions;
-  int? sizeInKB;
+  int sizeInKB;
 
   DetailRecord({
     required this.packageName,
     required this.directoryPath,
     required this.versionCount,
     required this.versions,
-    this.sizeInKB,
+    this.sizeInKB = 0,
   });
 
   DetailRecord copyWith({
