@@ -48,7 +48,9 @@ ToolBarPullDownButton _createToolBarPullDownButton(
     items: [
       MacosPulldownMenuItem(
         title: const Text('Delete old Packages'),
-        onTap: () async {},
+        onTap: () async {
+          ref.read(detailsNotifier.notifier).removeOldVersions();
+        },
       ),
       MacosPulldownMenuItem(
         title: const Text('Delete .pub_cache Completely'),

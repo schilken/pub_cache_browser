@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mixin_logger/mixin_logger.dart' as log;
 import 'package:path/path.dart' as p;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:tuple/tuple.dart';
 
 import '../app_constants.dart';
@@ -66,7 +69,7 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     if (_packageSizeMap.isEmpty) {
       await _fillPackageSizeMap();
     }
-    final fullList = await _enhanceDetailsWithSize();
+    final fullList = await _updateDetails();
     var filteredList = fullList;
     if (highlights.isNotEmpty) {
       //  && _searchOptions.filterEnabled) {
@@ -75,7 +78,7 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
         highlights,
       );
     }
-    return filteredList..sort(sorter);
+    return filteredList..sort(_sorter);
   }
 
   Future<void> _fillPackageSizeMap() async {
@@ -95,11 +98,15 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     }
   }
 
-  Future<List<DetailRecord>> _enhanceDetailsWithSize() async {
+  Future<List<DetailRecord>> _updateDetails() async {
     for (final packageName in _packageMap.keys) {
       final totalSize = _packageSizeMap[packageName];
       _packageMap[packageName] =
-          _packageMap[packageName]!.copyWith(sizeInKB: totalSize);
+          _packageMap[packageName]!.copyWith(
+        sizeInKB: totalSize,
+        versions: _packageMap[packageName]!.versions..sort(sortVersions),
+      );
+
     }
     return _packageMap.values.toList();
   }
@@ -126,6 +133,11 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
         ),
       );
     }
+
+  }
+
+  int sortVersions(String r1, String r2) {
+    return Version.parse(r2).compareTo(Version.parse(r1));
   }
 
   Tuple2<String, String>? splitName(String nameWithVersion) {
@@ -136,7 +148,7 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     return Tuple2<String, String>(parts.first, parts.last);
   }
 
-  int sorter(DetailRecord a, DetailRecord b) {
+  int _sorter(DetailRecord a, DetailRecord b) {
     if (_sortOrder == SortOrder.versionCount.displayName) {
       return b.versionCount.compareTo(a.versionCount);
     } else if (_sortOrder == SortOrder.diskUsage.displayName) {
@@ -177,6 +189,28 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
       }
     }
     return filteredList;
+  }
+
+  Future<void> removeOldVersions() async {
+    var numberOfRemovedPackageVersions = 0;
+    final packages = await _createDetails(_defaultFolder);
+    final sizeBefore = packages.fold<int>(0, (sum, r) => sum + r.sizeInKB);
+    for (final package in packages) {
+      for (final version in package.versions) {
+        final packagePathName =
+            p.join(_defaultFolder, '${package.packageName}-$version');
+        ref.read(fileSystemRepositoryProvider).removeFolder(packagePathName);
+        numberOfRemovedPackageVersions++;
+      }
+    }
+    final packagesAfter = await _createDetails(_defaultFolder);
+    final sizeAfter = packagesAfter.fold<int>(0, (sum, r) => sum + r.sizeInKB);
+    BotToast.showText(
+      text:
+          '$numberOfRemovedPackageVersions version removed, Disk Space freed: ${sizeBefore - sizeAfter}',
+      duration: const Duration(seconds: 3),
+      align: const Alignment(0, 0.3),
+    );
   }
 }
 

@@ -19,8 +19,7 @@ class FileSystemRepository {
     return entities
         .map((entity) => p.basename(entity.path))
         .where((packageName) => !packageName.startsWith('.'))
-        .toList()
-      ..sort((r1, r2) => r1.compareTo(r2));
+        .toList();
   }
 
   Future<String> readFile(String filePath) async {
@@ -40,6 +39,10 @@ class FileSystemRepository {
     } on Exception catch (e) {
       return e.toString();
     }
+  }
+
+  void removeFolder(String packagePathName) {
+    log.i('removeFolder packagePathName: $packagePathName');
   }
 }
 
