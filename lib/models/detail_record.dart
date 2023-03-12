@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as p;
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class DetailRecord {
@@ -15,6 +16,10 @@ class DetailRecord {
     required this.versions,
     this.sizeInKB = 0,
   });
+
+  String get nameOfLastVersion {
+    return '$packageName-${versions.first}';
+  }
 
   DetailRecord copyWith({
     String? packageName,

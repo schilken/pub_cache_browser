@@ -65,7 +65,7 @@ class FilesView extends ConsumerWidget {
                 spinnerRadius: 12,
               ),
               gapWidth12,
-              Text('${totalSize.toMegaBytes}'),
+              Text('Used Disk Space: ${totalSize.toMegaBytes}'),
             ],
           ),
         ),
@@ -117,27 +117,31 @@ class RecordsView extends StatelessWidget {
             record: record,
             onAction: onAction,
           ),
-          title: Padding(
-            padding: const EdgeInsets.all(8),
-            child: HighlightedText(
-              text: '${record.packageName} - ${record.versionCount}',
-              highlights: highlights,
-            ),
+          title: HighlightedText(
+            text: '${record.packageName} - ${record.versionCount}',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ), 
+            highlights: highlights,
           ),
-          subtitle: Row(
-            children: [
-              HighlightedText(
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 4, bottom: 12),
+            child: Row(
+              children: [
+                HighlightedText(
                   text: 'Versions: ${record.versions.join(", ")}',
-                highlights: highlights,
-              ),
-              gapWidth8,
-              Text(
-                'Total Size: ${record.sizeInKB.toMegaBytes}',
-                style: TextStyle(
-                  fontSize: 15,
+                  highlights: highlights,
                 ),
-              ),
-            ],
+                gapWidth8,
+                Text(
+                  'Total Size: ${record.sizeInKB.toMegaBytes}',
+                  style: TextStyle(
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -165,38 +169,33 @@ class ListTilePullDownMenu extends ConsumerWidget {
       icon: CupertinoIcons.ellipsis_circle,
       items: [
         MacosPulldownMenuItem(
-          title: const Text('Show Package Directory in Finder'),
-          onTap: () => ref.read(appCommandsProvider).showInFinder(filePath),
+          title: const Text('Open Package in VSCode'),
+          onTap: () {
+            ref.read(appCommandsProvider).openEditor(record.nameOfLastVersion);
+          },
         ),
         MacosPulldownMenuItem(
           title: const Text('Open Terminal in Package Directory'),
-          onTap: () => ref.read(appCommandsProvider).showInTerminal(filePath),
-        ),
-        MacosPulldownMenuItem(
-          title: const Text('Copy Package Directory to Clipboard'),
-          onTap: () => ref.read(appCommandsProvider).copyToClipboard(filePath),
+          onTap: () => ref
+              .read(appCommandsProvider)
+              .showInTerminal(record.nameOfLastVersion),
         ),
         const MacosPulldownMenuDivider(),
         MacosPulldownMenuItem(
-          title: const Text('Open Package in VSCode'),
-          onTap: () {
-            // ref
-            //     .read(settingsNotifier.notifier)
-            //     .addExcludedProject(record.packageName);
-            // BotToast.showText(
-            //   text: 'Project is now on List of excluded Projects.',
-            //   duration: const Duration(seconds: 3),
-            //   align: const Alignment(0, 0.3),
-            // );
-          },
+          title: const Text('Show Package Directory in Finder'),
+          onTap: () => ref
+              .read(appCommandsProvider)
+              .showInFinder(record.nameOfLastVersion),
         ),
         MacosPulldownMenuItem(
-          title: const Text('Copy Package and Open it in VSCode'),
-          onTap: () {
-          },
+          title: const Text('Copy Package Directory to Clipboard'),
+          onTap: () => ref
+              .read(appCommandsProvider)
+              .copyToClipboard(record.nameOfLastVersion),
         ),
+        const MacosPulldownMenuDivider(),
         MacosPulldownMenuItem(
-          title: const Text('Find local Projects using this Package'),
+          title: const Text('Show Package Info'),
           onTap: () => Future.delayed(
             Duration(milliseconds: 10),
             () => onAction?.call(
@@ -206,7 +205,11 @@ class ListTilePullDownMenu extends ConsumerWidget {
           ),
         ),
         MacosPulldownMenuItem(
-          title: const Text('Show Package Info'),
+          title: const Text('Copy Package and Open it in VSCode'),
+          onTap: () {},
+        ),
+        MacosPulldownMenuItem(
+          title: const Text('Find local Projects using this Package'),
           onTap: () => Future.delayed(
             Duration(milliseconds: 10),
             () => onAction?.call(

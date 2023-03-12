@@ -196,7 +196,7 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
     final packages = await _createDetails(_defaultFolder);
     final sizeBefore = packages.fold<int>(0, (sum, r) => sum + r.sizeInKB);
     for (final package in packages) {
-      for (final version in package.versions) {
+      for (final version in package.versions.sublist(1)) {
         final packagePathName =
             p.join(_defaultFolder, '${package.packageName}-$version');
         ref.read(fileSystemRepositoryProvider).removeFolder(packagePathName);
