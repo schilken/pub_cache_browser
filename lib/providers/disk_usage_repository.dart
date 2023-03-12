@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import '../models/disk_usage_record.dart';
 
-// find . -type d -name "build" -size +100cM -exec du -s -k  {}  \;
 class DiskUsageRepository {
   String? currentDirectory;
 
@@ -20,7 +19,7 @@ class DiskUsageRepository {
     final process = await Process.run(
       executable,
       arguments,
-      runInShell: true,
+//      runInShell: true,
     );
     if (process.exitCode != 0) {
       debugPrint('stderr: ${process.stderr}');

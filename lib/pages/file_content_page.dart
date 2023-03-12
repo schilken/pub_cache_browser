@@ -23,6 +23,11 @@ class _FileContentPageState extends ConsumerState<FileContentPage> {
     setState(() {});
   }
 
+  void _truncate() {
+    ref.read(fileSystemRepositoryProvider).writeTextFile(widget.filePath, '');
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     double windowHeight = MediaQuery.of(context).size.height;
@@ -48,6 +53,10 @@ class _FileContentPageState extends ConsumerState<FileContentPage> {
                       MacosIconButton(
                         icon: const MacosIcon(CupertinoIcons.refresh),
                         onPressed: _refresh,
+                      ),
+                      MacosIconButton(
+                        icon: const MacosIcon(CupertinoIcons.trash),
+                        onPressed: _truncate,
                       ),
                       const Spacer(),
                     ],
