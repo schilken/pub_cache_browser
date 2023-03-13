@@ -41,8 +41,23 @@ class FileSystemRepository {
     }
   }
 
-  void removeFolder(String packagePathName) {
+/// returns true if directory is sucessfully deleted
+  bool removeDirectory(String packagePathName) {
     log.i('removeFolder packagePathName: $packagePathName');
+    final directory = Directory(packagePathName);
+    if (directory.existsSync()) {
+      try {
+        directory.deleteSync(recursive: true);
+        log.i('Directory deleted successfully');
+        return true;
+      } on Exception catch (e) {
+        log.w('deleteSync failed: $e');
+        return false;
+      }
+    } else {
+      log.w('Directory does not exist');
+      return false;
+    }
   }
 }
 

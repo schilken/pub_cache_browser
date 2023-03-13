@@ -101,12 +101,10 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
   Future<List<DetailRecord>> _updateDetails() async {
     for (final packageName in _packageMap.keys) {
       final totalSize = _packageSizeMap[packageName];
-      _packageMap[packageName] =
-          _packageMap[packageName]!.copyWith(
+      _packageMap[packageName] = _packageMap[packageName]!.copyWith(
         sizeInKB: totalSize,
         versions: _packageMap[packageName]!.versions..sort(sortVersions),
       );
-
     }
     return _packageMap.values.toList();
   }
@@ -133,7 +131,6 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
         ),
       );
     }
-
   }
 
   int sortVersions(String r1, String r2) {
@@ -199,10 +196,14 @@ class DetailsNotifier extends AsyncNotifier<List<DetailRecord>?> {
       for (final version in package.versions.sublist(1)) {
         final packagePathName =
             p.join(_defaultFolder, '${package.packageName}-$version');
-        ref.read(fileSystemRepositoryProvider).removeFolder(packagePathName);
-        numberOfRemovedPackageVersions++;
+        if (ref
+            .read(fileSystemRepositoryProvider)
+            .removeDirectory(packagePathName)) {
+          numberOfRemovedPackageVersions++;
+        }
       }
     }
+    await refreshFileList();
     final packagesAfter = await _createDetails(_defaultFolder);
     final sizeAfter = packagesAfter.fold<int>(0, (sum, r) => sum + r.sizeInKB);
     BotToast.showText(
