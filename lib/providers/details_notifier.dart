@@ -230,3 +230,14 @@ final totalSizeProvider = Provider<int>((ref) {
     orElse: () => 0,
   );
 });
+
+final totalVersionCountProvider = Provider<int>((ref) {
+  final detailsAsyncValue = ref.watch(detailsNotifier);
+  return detailsAsyncValue.maybeMap<int>(
+    data: (data) {
+      final records = data.value ?? [];
+      return records.fold(0, (sum, r) => sum + r.versions.length);
+    },
+    orElse: () => 0,
+  );
+});

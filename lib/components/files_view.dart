@@ -33,6 +33,7 @@ class FilesView extends ConsumerWidget {
     final detailListAsyncValue = ref.watch(detailsNotifier);
     final totalSize = ref.watch(totalSizeProvider);
     final highlights = ref.watch(detailsNotifier.notifier).highlights;
+    final totalVersionCount = ref.watch(totalVersionCountProvider);
     return Column(
       children: [
         Container(
@@ -60,11 +61,11 @@ class FilesView extends ConsumerWidget {
                   if (records == null) {
                     return const Center(child: Text('-'));
                   }
-                  return Text('${records.length} Packages');
+                  return Text('${records.length} Packages, ');
                 },
                 spinnerRadius: 12,
               ),
-              gapWidth12,
+              Text('$totalVersionCount Versions, '),
               Text('Used Disk Space: ${totalSize.toMegaBytes}'),
             ],
           ),
@@ -119,7 +120,7 @@ class RecordsView extends StatelessWidget {
           ),
           title: HighlightedText(
             text: '${record.packageName} - ${record.versionCount}',
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
             ), 
@@ -136,7 +137,7 @@ class RecordsView extends StatelessWidget {
                 gapWidth8,
                 Text(
                   'Total Size: ${record.sizeInKB.toMegaBytes}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),
@@ -197,7 +198,7 @@ class ListTilePullDownMenu extends ConsumerWidget {
         MacosPulldownMenuItem(
           title: const Text('Show Package Info'),
           onTap: () => Future.delayed(
-            Duration(milliseconds: 10),
+            const Duration(milliseconds: 10),
             () => onAction?.call(
               'packageInfo',
               filePath,
@@ -211,7 +212,7 @@ class ListTilePullDownMenu extends ConsumerWidget {
         MacosPulldownMenuItem(
           title: const Text('Find local Projects using this Package'),
           onTap: () => Future.delayed(
-            Duration(milliseconds: 10),
+            const Duration(milliseconds: 10),
             () => onAction?.call(
               'packageInfo',
               filePath,
