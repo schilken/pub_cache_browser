@@ -21,7 +21,6 @@ class MainView extends ConsumerStatefulWidget {
 }
 
 class _MainViewState extends ConsumerState<MainView> {
-
   int sidebarPageIndex = 0;
   String pubLogFile =
       '${Platform.environment['HOME']}/.pub-cache/log/pub_log.txt';
@@ -31,7 +30,7 @@ class _MainViewState extends ConsumerState<MainView> {
       final userHomeDirectory = Platform.environment['HOME'];
       final currentValue = '$userHomeDirectory/.pub-cache/hosted/pub.dev';
       ref.read(defaultFolderNotifier.notifier).setFolder(currentValue);
-    } 
+    }
     setState(() {
       sidebarPageIndex = newIndex;
     });
@@ -47,12 +46,13 @@ class _MainViewState extends ConsumerState<MainView> {
             PlatformMenuItem(
               label: 'About',
               onSelected: () async {
-                final window = await DesktopMultiWindow.createWindow(jsonEncode(
-                  {
-                    'args1': 'About',
-                    'args2': 500,
-                    'args3': true,
-                  },
+                final window = await DesktopMultiWindow.createWindow(
+                  jsonEncode(
+                    {
+                      'args1': 'About',
+                      'args2': 500,
+                      'args3': true,
+                    },
                   ),
                 );
                 debugPrint('$window');

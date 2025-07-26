@@ -5,7 +5,6 @@ import '../app_constants.dart';
 import 'providers.dart';
 
 class PreferencesRepository {
-
   PreferencesRepository(this._prefs);
   final SharedPreferences _prefs;
 

@@ -47,26 +47,23 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     return MacosScaffold(
-        toolBar: getCustomToolBar(context, ref),
-        children: [
-          ContentArea(
-            minWidth: 200,
-            builder: (context, scrollController) {
-              return Padding(
+      toolBar: getCustomToolBar(context, ref),
+      children: [
+        ContentArea(
+          minWidth: 200,
+          builder: (context, scrollController) {
+            return Padding(
               padding: const EdgeInsets.all(24),
-                child: FilesView(
-                  onSelect: (detail) => _showEbook(detail, context),
+              child: FilesView(
+                onSelect: (detail) => _showEbook(detail, context),
                 onAction: (action, filePath) =>
                     _onAction(action, filePath, context),
-                ),
-              );
-            },
-          ),
+              ),
+            );
+          },
+        ),
 //          getDetailsPane(selectedDetail),
-        ],
+      ],
     );
   }
-
 }
-
-

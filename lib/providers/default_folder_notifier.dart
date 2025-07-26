@@ -29,7 +29,6 @@ class DefaultFolderNotifier extends Notifier<String> {
     }
     return fullPathName;
   }
-
 }
 
 final defaultFolderNotifier =

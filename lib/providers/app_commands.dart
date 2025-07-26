@@ -9,7 +9,6 @@ import 'package:path/path.dart' as p;
 import 'providers.dart';
 
 class AppCommands {
-
   AppCommands(this.currentFolder);
   final String currentFolder;
 
@@ -32,7 +31,6 @@ class AppCommands {
     final fullPath = p.join(currentFolder, path);
     Process.run('code', [fullPath]);
   }
-
 }
 
 final appCommandsProvider = Provider<AppCommands>(

@@ -334,5 +334,4 @@ class ToolBarItem {
 
 enum ToolBarItemControl { copy, paste, cut, selectAll }
 
-
 //TODO REMOVE TODOS

@@ -25,6 +25,5 @@ class DiskUsageRecord {
   }
 
   @override
-  int get hashCode =>
-      packageName.hashCode ^ size.hashCode;
+  int get hashCode => packageName.hashCode ^ size.hashCode;
 }

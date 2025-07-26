@@ -40,7 +40,7 @@ class DetailRecord {
   @override
   bool operator ==(covariant DetailRecord other) {
     if (identical(this, other)) return true;
-  
+
     return other.packageName == packageName &&
         other.directoryPath == directoryPath &&
         other.versionCount == versionCount &&

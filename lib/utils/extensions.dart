@@ -3,8 +3,8 @@ extension IntInKb on int {
     if (this < 1024 * 10) {
       return '$this byte';
     } else {
-    final kb = this ~/ 1024;
-    return '$kb KB';
+      final kb = this ~/ 1024;
+      return '$kb KB';
     }
   }
 }

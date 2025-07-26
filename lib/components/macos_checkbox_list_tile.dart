@@ -86,7 +86,7 @@ class MacosCheckBoxListTile extends StatelessWidget {
             onChanged: onChanged,
             offBorderColor: Colors.black,
           ),
-          gapWidth12,  
+          gapWidth12,
         ],
       ),
     );

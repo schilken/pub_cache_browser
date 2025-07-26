@@ -72,14 +72,14 @@ class FilesView extends ConsumerWidget {
         ),
         Expanded(
           child: AsyncValueWidget<List<DetailRecord>?>(
-              value: detailListAsyncValue,
-              data: (records) {
-                if (records == null) {
-                  return const Center(child: Text('Not yet scanned'));
-                }
-                if (records.isEmpty) {
-                  return const Center(child: Text('No paackages found'));
-                }
+            value: detailListAsyncValue,
+            data: (records) {
+              if (records == null) {
+                return const Center(child: Text('Not yet scanned'));
+              }
+              if (records.isEmpty) {
+                return const Center(child: Text('No paackages found'));
+              }
               return RecordsView(
                 records,
                 highlights,
@@ -99,7 +99,7 @@ class RecordsView extends StatelessWidget {
     this.records,
     this.highlights,
     this.ref, {
-    this.onAction, 
+    this.onAction,
     super.key,
   });
   final List<DetailRecord> records;
@@ -123,7 +123,7 @@ class RecordsView extends StatelessWidget {
             style: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
-            ), 
+            ),
             highlights: highlights,
           ),
           subtitle: Padding(

@@ -41,7 +41,7 @@ class FileSystemRepository {
     }
   }
 
-/// returns true if directory is sucessfully deleted
+  /// returns true if directory is sucessfully deleted
   bool removeDirectory(String packagePathName) {
     log.i('removeFolder packagePathName: $packagePathName');
     final directory = Directory(packagePathName);

@@ -34,8 +34,10 @@ void main(List<String> args) async {
     }
   } else {
     final sharedPreferences = await SharedPreferences.getInstance();
-    runApp(ProviderScope(overrides: [
-      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+    runApp(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         ],
         child: const App(),
       ),

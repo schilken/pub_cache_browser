@@ -41,7 +41,7 @@ class DiskUsageRepository {
           packageName: p.basename(
             pathName.trim(),
           ),
-            size: int.parse(usageInKB),
+          size: int.parse(usageInKB),
         );
       }
     }
