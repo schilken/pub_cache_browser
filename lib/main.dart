@@ -5,6 +5,7 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:macos_ui/macos_ui.dart';
 import 'package:mixin_logger/mixin_logger.dart' as log;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,8 +15,15 @@ import 'providers/providers.dart';
 
 const loggerFolder = '/tmp/pub_cache_browser_log';
 
+/// This method initializes macos_window_utils and styles the window.
+Future<void> _configureMacosWindowUtils() async {
+  const config = MacosWindowUtilsConfig();
+  await config.apply();
+}
+
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+  _configureMacosWindowUtils();
   debugPrint('main: $args');
   log.initLogger(loggerFolder);
   log.i('after initLogger');
