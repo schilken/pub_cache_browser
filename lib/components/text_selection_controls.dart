@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// This package allows you to create custom text selection controls and use them in the SelectableText widget or in the TextForm or TextFormField widgets.
 ///
@@ -49,7 +51,6 @@ class FlutterSelectionControls extends MaterialTextSelectionControls {
   void _onItemSelected({
     required ToolBarItem item,
     required TextSelectionDelegate delegate,
-    required ClipboardStatusNotifier? clipboardStatus,
   }) async {
     /// Handles the callback if the itemControl was passed as an argument to the pressed [ToolBarItem]
     if (item.itemControl != null) {
@@ -57,7 +58,7 @@ class FlutterSelectionControls extends MaterialTextSelectionControls {
 
       /// Handle the callback if the itemControl passed is of type [ToolBarItemControl.copy]
       if (control == ToolBarItemControl.copy) {
-        if (canCopy(delegate)) return handleCopy(delegate, clipboardStatus);
+        if (canCopy(delegate)) return handleCopy(delegate);
         return;
       }
 
@@ -114,10 +115,10 @@ class FlutterSelectionControls extends MaterialTextSelectionControls {
     BuildContext context,
     Rect globalEditableRegion,
     double textLineHeight,
-    Offset? selectionMidpoint,
+    Offset selectionMidpoint,
     List<TextSelectionPoint> endpoints,
     TextSelectionDelegate delegate,
-    ClipboardStatusNotifier? clipboardStatus,
+    ValueListenable<ClipboardStatus>? clipboardStatus,
     Offset? lastSecondaryTapDownPosition,
   ) {
     final startTextSelectionPoint = endpoints[0];
@@ -126,14 +127,14 @@ class FlutterSelectionControls extends MaterialTextSelectionControls {
         endpoints.length > 1 ? endpoints[1] : endpoints[0];
 
     final anchorAbove = Offset(
-      globalEditableRegion.left + (selectionMidpoint ?? Offset.zero).dx,
+      globalEditableRegion.left + selectionMidpoint.dx,
       globalEditableRegion.top +
           startTextSelectionPoint.point.dy -
           textLineHeight -
           _kToolbarContentDistance,
     );
     final anchorBelow = Offset(
-      globalEditableRegion.left + (selectionMidpoint ?? Offset.zero).dx,
+      globalEditableRegion.left + selectionMidpoint.dx,
       globalEditableRegion.top +
           endTextSelectionPoint.point.dy +
           _kToolbarContentDistanceBelow,
@@ -153,7 +154,6 @@ class FlutterSelectionControls extends MaterialTextSelectionControls {
       onItemSelected: (ToolBarItem item) => _onItemSelected(
         item: item,
         delegate: delegate,
-        clipboardStatus: clipboardStatus,
       ),
     );
   }
@@ -182,13 +182,13 @@ class _SelectionToolBar extends StatefulWidget {
   final Offset anchorBelow;
 
   ///A [ValueNotifier] whose [value] indicates whether the current contents of the clipboard can be pasted.
-  final ClipboardStatusNotifier? clipboardStatus;
+  final ValueListenable<ClipboardStatus>? clipboardStatus;
 
   /// Widgets to be displayed on the text selection tool bar
   final List<ToolBarItem> toolBarItems;
 
   /// A callback function when a [ToolBarItem] is pressed
-  final Function(ToolBarItem) onItemSelected;
+  final void Function(ToolBarItem) onItemSelected;
 
   /// This controls the amount of vertical space between each tool bar item
   final double horizontalPadding;
@@ -225,7 +225,6 @@ class __SelectionToolBarState extends State<_SelectionToolBar> {
   void initState() {
     super.initState();
     widget.clipboardStatus?.addListener(_onChangedClipboardStatus);
-    widget.clipboardStatus?.update();
   }
 
   @override
@@ -235,15 +234,12 @@ class __SelectionToolBarState extends State<_SelectionToolBar> {
       widget.clipboardStatus?.addListener(_onChangedClipboardStatus);
       oldWidget.clipboardStatus?.removeListener(_onChangedClipboardStatus);
     }
-    widget.clipboardStatus?.update();
   }
 
   @override
   void dispose() {
     super.dispose();
-    if (widget.clipboardStatus != null && !widget.clipboardStatus!.disposed) {
-      widget.clipboardStatus?.removeListener(_onChangedClipboardStatus);
-    }
+    widget.clipboardStatus?.removeListener(_onChangedClipboardStatus);
   }
 
   @override
@@ -322,7 +318,7 @@ class ToolBarItem {
   final Widget item;
 
   /// This gives access the highlighted text, the start index and the end index of the highlighted text
-  final Function(String highlightedText, int startIndex, int endIndex)?
+  final void Function(String highlightedText, int startIndex, int endIndex)?
       onItemPressed;
 
   /// This gives you the option to use flutter text selection controls on your custom widget

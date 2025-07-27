@@ -124,8 +124,8 @@ class RecordsView extends StatelessWidget {
             title: Row(
               children: [
                 PushButton(
-                  buttonSize: ButtonSize.large,
-                  isSecondary: true,
+                  controlSize: ControlSize.large,
+                  secondary: true,
                   color: Colors.white,
                   child: const Text('Save'),
                   onPressed: () async {

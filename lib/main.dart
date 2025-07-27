@@ -17,7 +17,7 @@ const loggerFolder = '/tmp/pub_cache_browser_log';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   debugPrint('main: $args');
-  await log.initLogger(loggerFolder);
+  log.initLogger(loggerFolder);
   log.i('after initLogger');
   if (args.firstOrNull == 'multi_window') {
     final windowId = int.parse(args[1]);
